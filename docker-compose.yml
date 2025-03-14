@@ -1,0 +1,29 @@
+services:
+  interactive:
+    image: yogi:latest
+    container_name: yogi-interactive
+    privileged: true
+    ipc: host
+    environment:
+      - "DISPLAY=:1"
+      - "ACCEPT_EULA=Y"
+      - "PRIVACY_CONSENT=Y"
+      - "QT_X11_NO_MITSHM=1"
+      - /etc/localtime:/etc/localtime:ro
+      - XAUTHORITY=/tmp/.dockersim.xauth
+      - SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
+    volumes:
+      - /tmp/.dockersim.xauth:/tmp/.dockersim.xauth:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - $SSH_AUTH_SOCK:$SSH_AUTH_SOCK
+    network_mode: "host"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    entrypoint: ["/bin/bash"] #["tail", "-f", "/dev/null"]
+    stdin_open: true
+    tty: true
